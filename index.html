@@ -993,7 +993,21 @@
         </form>
     </div>
 
+    <!-- Cargar Supabase desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
+        // =====================================================
+        // CONFIGURACIÓN DE SUPABASE
+        // =====================================================
+        const supabaseUrl = 'https://zbfffnmdafhjzyoxjidb.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpiZmZmbm1kYWZoanp5b3hqaWRiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI0MTQ4MDQsImV4cCI6MjA0Nzk5MDgwNH0.QuwCs7R2AZEqyPtPxoXtWYodAyOOigmTmPE-w2AWz7w';
+        const supabase1 = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // =====================================================
+        // FUNCIONES AUXILIARES
+        // =====================================================
+        
         // Función para actualizar valores de checkbox múltiples
         function updateCheckboxValue(questionNumber) {
             const checkboxes = document.querySelectorAll(`input[type="checkbox"][onchange="updateCheckboxValue(${questionNumber})"]`);
@@ -1002,6 +1016,63 @@
                 .map(cb => cb.value);
             
             document.getElementById(`pregunta_${questionNumber}_hidden`).value = checkedValues.join(', ');
+        }
+
+        // Función para mostrar loading
+        function showLoading() {
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = '⏳ Enviando...';
+            submitBtn.disabled = true;
+        }
+
+        // Función para ocultar loading
+        function hideLoading() {
+            const submitBtn = document.querySelector('.submit-btn');
+            submitBtn.innerHTML = 'Enviar Encuesta';
+            submitBtn.disabled = false;
+        }
+
+        // Función para mostrar mensaje de éxito
+        function showSuccess() {
+            const submitSection = document.querySelector('.submit-section');
+            submitSection.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3em; color: #27ae60; margin-bottom: 20px;">✅</div>
+                    <h3 style="color: #27ae60; margin-bottom: 15px;">¡Encuesta Enviada Exitosamente!</h3>
+                    <p style="margin-bottom: 20px;">Muchas gracias por su tiempo y participación en nuestro estudio.</p>
+                    <p style="font-size: 0.9em; opacity: 0.8;">Sus respuestas son muy valiosas para nuestro proyecto de investigación.</p>
+                    <button onclick="location.reload()" style="
+                        background: #27ae60; 
+                        color: white; 
+                        padding: 10px 20px; 
+                        border: none; 
+                        border-radius: 25px; 
+                        margin-top: 20px; 
+                        cursor: pointer;
+                    ">Realizar otra encuesta</button>
+                </div>
+            `;
+        }
+
+        // Función para mostrar error
+        function showError(errorMsg) {
+            const submitSection = document.querySelector('.submit-section');
+            submitSection.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <div style="font-size: 3em; color: #e74c3c; margin-bottom: 20px;">❌</div>
+                    <h3 style="color: #e74c3c; margin-bottom: 15px;">Error al Enviar</h3>
+                    <p style="margin-bottom: 20px;">Hubo un problema al enviar su encuesta.</p>
+                    <p style="font-size: 0.9em; opacity: 0.8; margin-bottom: 20px;">Error: ${errorMsg}</p>
+                    <button onclick="location.reload()" style="
+                        background: #e74c3c; 
+                        color: white; 
+                        padding: 10px 20px; 
+                        border: none; 
+                        border-radius: 25px; 
+                        cursor: pointer;
+                    ">Intentar nuevamente</button>
+                </div>
+            `;
         }
 
         // Barra de progreso
@@ -1026,9 +1097,39 @@
             document.getElementById('progressBar').style.width = progress + '%';
         }
 
+        // Función para recopilar metadatos del dispositivo
+        function getDeviceMetadata() {
+            const userAgent = navigator.userAgent;
+            let dispositivo = 'Desktop';
+            let navegador = 'Unknown';
+
+            // Detectar dispositivo
+            if (/Mobi|Android/i.test(userAgent)) dispositivo = 'Móvil';
+            else if (/Tablet|iPad/i.test(userAgent)) dispositivo = 'Tablet';
+
+            // Detectar navegador
+            if (userAgent.includes('Chrome')) navegador = 'Chrome';
+            else if (userAgent.includes('Firefox')) navegador = 'Firefox';
+            else if (userAgent.includes('Safari')) navegador = 'Safari';
+            else if (userAgent.includes('Edge')) navegador = 'Edge';
+
+            return {
+                user_agent: userAgent,
+                dispositivo_usado: dispositivo,
+                navegador: navegador,
+                version_encuesta: '1.0',
+                fuente: 'web_form'
+            };
+        }
+
+        // =====================================================
+        // EVENTO PRINCIPAL DEL FORMULARIO
+        // =====================================================
+        
         // Event listeners para actualizar progreso
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('encuestaForm');
+            let startTime = Date.now();
             
             // Actualizar progreso en cada cambio
             form.addEventListener('change', updateProgress);
@@ -1038,53 +1139,144 @@
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                // Recopilar todos los datos del formulario
-                const formData = new FormData(form);
-                const data = {};
-                
-                // Convertir FormData a objeto simple
-                for (let [key, value] of formData.entries()) {
-                    data[key] = value;
+                try {
+                    // Mostrar loading
+                    showLoading();
+                    
+                    // Calcular tiempo completado
+                    const endTime = Date.now();
+                    const tiempoCompletado = Math.round((endTime - startTime) / 1000); // en segundos
+                    
+                    // Recopilar todos los datos del formulario
+                    const formData = new FormData(form);
+                    const data = {};
+                    
+                    // Convertir FormData a objeto simple
+                    for (let [key, value] of formData.entries()) {
+                        data[key] = value;
+                    }
+                    
+                    // Agregar metadatos
+                    const metadata = getDeviceMetadata();
+                    Object.assign(data, metadata);
+                    
+                    // Agregar timestamp y tiempo completado
+                    data.fecha_respuesta = new Date().toISOString();
+                    data.tiempo_completado = tiempoCompletado;
+                    
+                    // Validar datos requeridos
+                    if (!data.consentimiento) {
+                        throw new Error('Debe aceptar el consentimiento informado');
+                    }
+                    
+                    console.log('📊 Datos a enviar a Supabase:', data);
+                    
+                    // =====================================================
+                    // INSERTAR EN SUPABASE
+                    // =====================================================
+                    const { data: result, error } = await supabase1
+                        .from('encuesta_influenza')
+                        .insert([data]);
+                    
+                    if (error) {
+                        console.error('❌ Error de Supabase:', error);
+                        throw new Error(error.message);
+                    }
+                    
+                    console.log('✅ Respuesta insertada exitosamente:', result);
+                    
+                    // Mostrar mensaje de éxito
+                    showSuccess();
+                    
+                    // Scroll hacia arriba para ver el mensaje
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                } catch (error) {
+                    console.error('❌ Error al enviar encuesta:', error);
+                    hideLoading();
+                    showError(error.message);
+                    
+                    // Scroll hacia abajo para ver el error
+                    document.querySelector('.submit-section').scrollIntoView({ 
+                        behavior: 'smooth' 
+                    });
                 }
-                
-                // Agregar timestamp
-                data.fecha_respuesta = new Date().toISOString();
-                
-                // Aquí es donde harías el INSERT a Supabase
-                console.log('Datos para Supabase:', data);
-                
-                // Ejemplo de estructura para Supabase:
-                /*
-                const { data: result, error } = await supabase
-                    .from('encuesta_influenza')
-                    .insert([data]);
-                
-                if (error) {
-                    console.error('Error:', error);
-                    alert('Error al enviar la encuesta. Por favor, intente nuevamente.');
-                } else {
-                    alert('¡Encuesta enviada exitosamente! Muchas gracias por su participación.');
-                    form.reset();
-                    updateProgress();
-                }
-                */
-                
-                // Por ahora, solo mostrar mensaje de éxito
-                alert('¡Encuesta enviada exitosamente! Muchas gracias por su participación.');
-                form.reset();
-                updateProgress();
             });
 
             // Inicializar progreso
             updateProgress();
+            
+            // Guardar tiempo de inicio
+            startTime = Date.now();
         });
 
+        // =====================================================
+        // ANIMACIONES Y UX MEJORADO
+        // =====================================================
+        
         // Smooth scroll para mejor UX
         document.addEventListener('DOMContentLoaded', function() {
             const sections = document.querySelectorAll('.section');
             sections.forEach((section, index) => {
                 section.style.animationDelay = `${index * 0.1}s`;
             });
+        });
+
+        // Auto-scroll suave entre secciones al completar
+        document.addEventListener('change', function(e) {
+            if (e.target.type === 'radio' && e.target.required) {
+                setTimeout(() => {
+                    const currentSection = e.target.closest('.section');
+                    const nextSection = currentSection.nextElementSibling;
+                    if (nextSection && nextSection.classList.contains('section')) {
+                        nextSection.scrollIntoView({ 
+                            behavior: 'smooth', 
+                            block: 'start' 
+                        });
+                    }
+                }, 500);
+            }
+        });
+
+        // =====================================================
+        // FUNCIONES DE MONITOREO (OPCIONAL)
+        // =====================================================
+        
+        // Función para obtener estadísticas en tiempo real (para administradores)
+        async function obtenerEstadisticas() {
+            try {
+                const { data, error } = await supabase1
+                    .from('encuesta_influenza')
+                    .select('*');
+                    
+                if (error) throw error;
+                
+                console.log(`📈 Total de respuestas: ${data.length}`);
+                return data;
+            } catch (error) {
+                console.error('Error al obtener estadísticas:', error);
+            }
+        }
+
+        // Función para verificar conexión con Supabase
+        async function verificarConexion() {
+            try {
+                const { data, error } = await supabase1
+                    .from('encuesta_influenza')
+                    .select('count', { count: 'exact', head: true });
+                    
+                if (error) throw error;
+                console.log('✅ Conexión con Supabase establecida');
+                return true;
+            } catch (error) {
+                console.error('❌ Error de conexión con Supabase:', error);
+                return false;
+            }
+        }
+
+        // Verificar conexión al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            verificarConexion();
         });
     </script>
 </body>
