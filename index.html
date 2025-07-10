@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta Aplicación Influenza UX/UI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 4px solid #27ae60;
+        }
+
+        .section-title {
+            font-size: 1.4em;
+            color: #27ae60;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+        }
+
+        .question-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #27ae60;
+            box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option, .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover, .checkbox-option:hover {
+            border-color: #27ae60;
+            background: #f0f8f4;
+        }
+
+        .radio-option input, .checkbox-option input {
+            margin-right: 12px;
+            transform: scale(1.2);
+            accent-color: #27ae60;
+        }
+
+        .radio-option input:checked + span, 
+        .checkbox-option input:checked + span {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .submit-section {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin: 40px -40px -40px -40px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .required {
+            color: #e74c3c;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e0e0e0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar">
+        <div class="progress" id="progressBar"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Encuesta Aplicación Influenza UX/UI</h1>
+            <p>Instituto Superior Universitario Espíritu Santo</p>
+            <p>Su participación es fundamental para nuestro proyecto de investigación</p>
+        </div>
+
+        <form class="form-container" id="encuestaForm">
+            <!-- SECCIÓN I: INFORMACIÓN DEMOGRÁFICA -->
+            <div class="section">
+                <h2 class="section-title">I. Información Demográfica</h2>
+
+                <div class="question">
+                    <label class="question-label">1. Edad <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_1" value="18-25 años" required>
+                            <span>18-25 años</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_1" value="26-35 años">
+                            <span>26-35 años</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_1" value="36-45 años">
+                            <span>36-45 años</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_1" value="46-55 años">
+                            <span>46-55 años</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_1" value="56-65 años">
+                            <span>56-65 años</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">2. Género <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_2" value="Masculino" required>
+                            <span>Masculino</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_2" value="Femenino">
+                            <span>Femenino</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_2" value="Otro">
+                            <span>Otro</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_2" value="Prefiero no responder">
+                            <span>Prefiero no responder</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">3. Nivel educativo <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_3" value="Secundaria incompleta" required>
+                            <span>Secundaria incompleta</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_3" value="Secundaria completa">
+                            <span>Secundaria completa</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_3" value="Técnico/Tecnológico">
+                            <span>Técnico/Tecnológico</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_3" value="Universitario">
+                            <span>Universitario</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_3" value="Posgrado">
+                            <span>Posgrado</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">4. Ocupación <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_4" value="Estudiante" required>
+                            <span>Estudiante</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_4" value="Empleado sector privado">
+                            <span>Empleado sector privado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_4" value="Empleado sector público">
+                            <span>Empleado sector público</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_4" value="Independiente/Empresario">
+                            <span>Independiente/Empresario</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_4" value="Jubilado/Pensionado">
+                            <span>Jubilado/Pensionado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_4" value="Desempleado">
+                            <span>Desempleado</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">5. Zona de residencia en Guayaquil <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_5" value="Norte" required>
+                            <span>Norte</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_5" value="Sur">
+                            <span>Sur</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_5" value="Centro">
+                            <span>Centro</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_5" value="Este">
+                            <span>Este</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_5" value="Oeste">
+                            <span>Oeste</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_5" value="Vía a la Costa/Samborondón">
+                            <span>Vía a la Costa/Samborondón</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN II: CONOCIMIENTO SOBRE LA INFLUENZA -->
+            <div class="section">
+                <h2 class="section-title">II. Conocimiento sobre la Influenza</h2>
+
+                <div class="question">
+                    <label class="question-label">6. ¿Qué tan familiarizado está con la influenza (gripe)? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_6" value="Muy familiarizado" required>
+                            <span>Muy familiarizado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_6" value="Familiarizado">
+                            <span>Familiarizado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_6" value="Poco familiarizado">
+                            <span>Poco familiarizado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_6" value="Nada familiarizado">
+                            <span>Nada familiarizado</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">7. ¿Cuáles considera que son los síntomas principales de la influenza? (Puede marcar varias opciones)</label>
+                    <input type="hidden" name="pregunta_7" id="pregunta_7_hidden">
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Fiebre alta" onchange="updateCheckboxValue(7)">
+                            <span>Fiebre alta</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Tos seca" onchange="updateCheckboxValue(7)">
+                            <span>Tos seca</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Dolor de cabeza" onchange="updateCheckboxValue(7)">
+                            <span>Dolor de cabeza</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Dolor muscular" onchange="updateCheckboxValue(7)">
+                            <span>Dolor muscular</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Fatiga" onchange="updateCheckboxValue(7)">
+                            <span>Fatiga</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Congestión nasal" onchange="updateCheckboxValue(7)">
+                            <span>Congestión nasal</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Dolor de garganta" onchange="updateCheckboxValue(7)">
+                            <span>Dolor de garganta</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Náuseas" onchange="updateCheckboxValue(7)">
+                            <span>Náuseas</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="No estoy seguro" onchange="updateCheckboxValue(7)">
+                            <span>No estoy seguro</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">8. ¿Ha tenido influenza en los últimos 3 años? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_8" value="Sí, una vez" required>
+                            <span>Sí, una vez</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_8" value="Sí, varias veces">
+                            <span>Sí, varias veces</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_8" value="No estoy seguro">
+                            <span>No estoy seguro</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_8" value="No">
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">9. ¿Dónde obtiene información sobre enfermedades como la influenza? (Puede marcar varias opciones)</label>
+                    <input type="hidden" name="pregunta_9" id="pregunta_9_hidden">
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Médico/Centro de salud" onchange="updateCheckboxValue(9)">
+                            <span>Médico/Centro de salud</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Internet/Páginas web" onchange="updateCheckboxValue(9)">
+                            <span>Internet/Páginas web</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Redes sociales" onchange="updateCheckboxValue(9)">
+                            <span>Redes sociales</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Televisión/Radio" onchange="updateCheckboxValue(9)">
+                            <span>Televisión/Radio</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Familiares/Amigos" onchange="updateCheckboxValue(9)">
+                            <span>Familiares/Amigos</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Aplicaciones móviles" onchange="updateCheckboxValue(9)">
+                            <span>Aplicaciones móviles</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Farmacias" onchange="updateCheckboxValue(9)">
+                            <span>Farmacias</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">10. ¿Qué tan interesado estaría en obtener más información sobre la influenza? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_10" value="Muy interesado" required>
+                            <span>Muy interesado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_10" value="Interesado">
+                            <span>Interesado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_10" value="Poco interesado">
+                            <span>Poco interesado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_10" value="Nada interesado">
+                            <span>Nada interesado</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN III: USO DE TECNOLOGÍA -->
+            <div class="section">
+                <h2 class="section-title">III. Uso de Tecnología y Aplicaciones Móviles</h2>
+
+                <div class="question">
+                    <label class="question-label">11. ¿Qué tipo de dispositivo móvil utiliza principalmente? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_11" value="Smartphone Android" required>
+                            <span>Smartphone Android</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_11" value="iPhone (iOS)">
+                            <span>iPhone (iOS)</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_11" value="Tablet Android">
+                            <span>Tablet Android</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_11" value="iPad">
+                            <span>iPad</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">12. ¿Con qué frecuencia usa aplicaciones móviles? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_12" value="Diariamente" required>
+                            <span>Diariamente</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_12" value="Varias veces por semana">
+                            <span>Varias veces por semana</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_12" value="Una vez por semana">
+                            <span>Una vez por semana</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_12" value="Ocasionalmente">
+                            <span>Ocasionalmente</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_12" value="Raramente">
+                            <span>Raramente</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">13. ¿Ha utilizado alguna vez aplicaciones relacionadas con salud o medicina? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_13" value="Sí, las uso frecuentemente" required>
+                            <span>Sí, las uso frecuentemente</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_13" value="Sí, las he usado algunas veces">
+                            <span>Sí, las he usado algunas veces</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_13" value="Sí, las he probado pero no las uso regularmente">
+                            <span>Sí, las he probado pero no las uso regularmente</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_13" value="No, nunca he usado aplicaciones de salud">
+                            <span>No, nunca he usado aplicaciones de salud</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">14. Si ha usado aplicaciones de salud, ¿cuáles han sido? (Puede marcar varias opciones)</label>
+                    <input type="hidden" name="pregunta_14" id="pregunta_14_hidden">
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Aplicaciones de ejercicio/fitness" onchange="updateCheckboxValue(14)">
+                            <span>Aplicaciones de ejercicio/fitness</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Aplicaciones de nutrición/dieta" onchange="updateCheckboxValue(14)">
+                            <span>Aplicaciones de nutrición/dieta</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Aplicaciones de monitoreo de salud" onchange="updateCheckboxValue(14)">
+                            <span>Aplicaciones de monitoreo de salud</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Aplicaciones de información médica" onchange="updateCheckboxValue(14)">
+                            <span>Aplicaciones de información médica</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Aplicaciones de primeros auxilios" onchange="updateCheckboxValue(14)">
+                            <span>Aplicaciones de primeros auxilios</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Aplicaciones de meditación/bienestar mental" onchange="updateCheckboxValue(14)">
+                            <span>Aplicaciones de meditación/bienestar mental</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="No he usado aplicaciones de salud" onchange="updateCheckboxValue(14)">
+                            <span>No he usado aplicaciones de salud</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">15. ¿Cómo calificaría su nivel de habilidad con las aplicaciones móviles? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_15" value="Experto" required>
+                            <span>Experto</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_15" value="Avanzado">
+                            <span>Avanzado</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_15" value="Intermedio">
+                            <span>Intermedio</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_15" value="Básico">
+                            <span>Básico</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_15" value="Principiante">
+                            <span>Principiante</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN IV: PREFERENCIAS DE DISEÑO -->
+            <div class="section">
+                <h2 class="section-title">IV. Preferencias de Diseño y Usabilidad</h2>
+
+                <div class="question">
+                    <label class="question-label">16. ¿Qué colores prefiere para una aplicación de salud? (Puede marcar varias opciones)</label>
+                    <input type="hidden" name="pregunta_16" id="pregunta_16_hidden">
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Azul (transmite confianza)" onchange="updateCheckboxValue(16)">
+                            <span>Azul (transmite confianza)</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Verde (asociado con salud)" onchange="updateCheckboxValue(16)">
+                            <span>Verde (asociado con salud)</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Blanco (limpio y profesional)" onchange="updateCheckboxValue(16)">
+                            <span>Blanco (limpio y profesional)</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Colores suaves/pasteles" onchange="updateCheckboxValue(16)">
+                            <span>Colores suaves/pasteles</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Colores vibrantes" onchange="updateCheckboxValue(16)">
+                            <span>Colores vibrantes</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="No tengo preferencia" onchange="updateCheckboxValue(16)">
+                            <span>No tengo preferencia</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">17. ¿Qué tipo de información visual prefiere? (Puede marcar varias opciones)</label>
+                    <input type="hidden" name="pregunta_17" id="pregunta_17_hidden">
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Íconos y símbolos" onchange="updateCheckboxValue(17)">
+                            <span>Íconos y símbolos</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Imágenes/fotografías" onchange="updateCheckboxValue(17)">
+                            <span>Imágenes/fotografías</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Gráficos y diagramas" onchange="updateCheckboxValue(17)">
+                            <span>Gráficos y diagramas</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Videos explicativos" onchange="updateCheckboxValue(17)">
+                            <span>Videos explicativos</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Infografías" onchange="updateCheckboxValue(17)">
+                            <span>Infografías</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Solo texto" onchange="updateCheckboxValue(17)">
+                            <span>Solo texto</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Animaciones simples" onchange="updateCheckboxValue(17)">
+                            <span>Animaciones simples</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">18. ¿Qué tamaño de texto prefiere para leer en aplicaciones? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_18" value="Muy pequeño" required>
+                            <span>Muy pequeño</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_18" value="Pequeño">
+                            <span>Pequeño</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_18" value="Normal">
+                            <span>Normal</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_18" value="Grande">
+                            <span>Grande</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_18" value="Muy grande">
+                            <span>Muy grande</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_18" value="Ajustable según necesidad">
+                            <span>Ajustable según necesidad</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">19. ¿Qué aspectos considera más importantes en una aplicación de salud? (Ordene del 1 al 8, siendo 1 el más importante)</label>
+                    <input type="text" name="pregunta_19" class="form-control" placeholder="Ejemplo: Facilidad de uso (1), Información confiable (2), etc.">
+                </div>
+
+                <div class="question">
+                    <label class="question-label">20. ¿Qué tipo de navegación prefiere en una aplicación? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_20" value="Menú principal en la parte superior" required>
+                            <span>Menú principal en la parte superior</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_20" value="Menú en la parte inferior">
+                            <span>Menú en la parte inferior</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_20" value="Menú lateral deslizante">
+                            <span>Menú lateral deslizante</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_20" value="Botones grandes y visibles">
+                            <span>Botones grandes y visibles</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_20" value="Navegación por pestañas">
+                            <span>Navegación por pestañas</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_20" value="No tengo preferencia">
+                            <span>No tengo preferencia</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN V: CARACTERÍSTICAS ESPECÍFICAS -->
+            <div class="section">
+                <h2 class="section-title">V. Características Específicas de la Aplicación</h2>
+
+                <div class="question">
+                    <label class="question-label">21. ¿Qué funcionalidades le gustaría que tuviera una aplicación informativa sobre la influenza? (Puede marcar varias opciones)</label>
+                    <input type="hidden" name="pregunta_21" id="pregunta_21_hidden">
+                    <div class="checkbox-group">
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Identificación de síntomas" onchange="updateCheckboxValue(21)">
+                            <span>Identificación de síntomas</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Información sobre prevención" onchange="updateCheckboxValue(21)">
+                            <span>Información sobre prevención</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Consejos de tratamiento casero" onchange="updateCheckboxValue(21)">
+                            <span>Consejos de tratamiento casero</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Cuándo buscar atención médica" onchange="updateCheckboxValue(21)">
+                            <span>Cuándo buscar atención médica</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Información sobre vacunas" onchange="updateCheckboxValue(21)">
+                            <span>Información sobre vacunas</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Mapas de centros de salud cercanos" onchange="updateCheckboxValue(21)">
+                            <span>Mapas de centros de salud cercanos</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Seguimiento de síntomas" onchange="updateCheckboxValue(21)">
+                            <span>Seguimiento de síntomas</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Recordatorios de medicamentos" onchange="updateCheckboxValue(21)">
+                            <span>Recordatorios de medicamentos</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Noticias sobre brotes o epidemias" onchange="updateCheckboxValue(21)">
+                            <span>Noticias sobre brotes o epidemias</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Consejos de higiene" onchange="updateCheckboxValue(21)">
+                            <span>Consejos de higiene</span>
+                        </label>
+                        <label class="checkbox-option">
+                            <input type="checkbox" value="Información para diferentes grupos de edad" onchange="updateCheckboxValue(21)">
+                            <span>Información para diferentes grupos de edad</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">22. ¿Cómo prefiere que se presente la información sobre síntomas? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_22" value="Lista con descripciones de texto" required>
+                            <span>Lista con descripciones de texto</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_22" value="Imágenes con explicaciones">
+                            <span>Imágenes con explicaciones</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_22" value="Cuestionario interactivo">
+                            <span>Cuestionario interactivo</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_22" value="Infografías visuales">
+                            <span>Infografías visuales</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_22" value="Videos explicativos">
+                            <span>Videos explicativos</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_22" value="Combinación de texto e imágenes">
+                            <span>Combinación de texto e imágenes</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">23. ¿Estaría dispuesto a proporcionar información personal (edad, condiciones médicas) para recibir información personalizada? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_23" value="Sí, sin problemas" required>
+                            <span>Sí, sin problemas</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_23" value="Sí, pero información mínima">
+                            <span>Sí, pero información mínima</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_23" value="Tal vez, dependiendo del beneficio">
+                            <span>Tal vez, dependiendo del beneficio</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_23" value="Prefiero no proporcionar información personal">
+                            <span>Prefiero no proporcionar información personal</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_23" value="No, definitivamente no">
+                            <span>No, definitivamente no</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">24. ¿Qué tan importante es que la aplicación funcione sin conexión a internet? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_24" value="Muy importante" required>
+                            <span>Muy importante</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_24" value="Importante">
+                            <span>Importante</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_24" value="Poco importante">
+                            <span>Poco importante</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_24" value="Nada importante">
+                            <span>Nada importante</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">25. ¿Usaría una aplicación móvil gratuita sobre información de influenza? <span class="required">*</span></label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_25" value="Definitivamente sí" required>
+                            <span>Definitivamente sí</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_25" value="Probablemente sí">
+                            <span>Probablemente sí</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_25" value="Tal vez">
+                            <span>Tal vez</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_25" value="Probablemente no">
+                            <span>Probablemente no</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="pregunta_25" value="Definitivamente no">
+                            <span>Definitivamente no</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN VI: PREGUNTAS ABIERTAS -->
+            <div class="section">
+                <h2 class="section-title">VI. Preguntas Abiertas</h2>
+
+                <div class="question">
+                    <label class="question-label">26. ¿Qué dificultades ha experimentado al usar aplicaciones de salud?</label>
+                    <textarea name="pregunta_26" class="form-control textarea" placeholder="Escriba su respuesta aquí..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">27. ¿Qué características considera que NO debería tener una aplicación de salud?</label>
+                    <textarea name="pregunta_27" class="form-control textarea" placeholder="Escriba su respuesta aquí..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">28. ¿Qué sugerencias tiene para mejorar el diseño de aplicaciones de salud?</label>
+                    <textarea name="pregunta_28" class="form-control textarea" placeholder="Escriba su respuesta aquí..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">29. ¿Hay alguna funcionalidad específica que le gustaría ver en una aplicación sobre la influenza que no hayamos mencionado?</label>
+                    <textarea name="pregunta_29" class="form-control textarea" placeholder="Escriba su respuesta aquí..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">30. Comentarios adicionales:</label>
+                    <textarea name="pregunta_30" class="form-control textarea" placeholder="Escriba cualquier comentario adicional..."></textarea>
+                </div>
+            </div>
+
+            <!-- CONSENTIMIENTO -->
+            <div class="section">
+                <h2 class="section-title">Consentimiento Informado</h2>
+                <div class="question">
+                    <p style="margin-bottom: 20px; line-height: 1.8;">
+                        Al completar esta encuesta, usted acepta que:<br>
+                        • Su participación es voluntaria<br>
+                        • Los datos serán utilizados únicamente para fines académicos<br>
+                        • Su información será tratada de manera confidencial<br>
+                        • Puede retirar su participación en cualquier momento<br>
+                        • Los resultados podrán ser publicados de forma agregada sin identificar participantes individuales
+                    </p>
+                    <label class="checkbox-option" style="margin-top: 20px;">
+                        <input type="checkbox" name="consentimiento" value="acepto" required>
+                        <span><strong>Acepto participar en este estudio bajo las condiciones mencionadas</strong> <span class="required">*</span></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="submit-section">
+                <h3 style="margin-bottom: 20px;">¡Muchas gracias por su tiempo y colaboración!</h3>
+                <button type="submit" class="submit-btn">Enviar Encuesta</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Función para actualizar valores de checkbox múltiples
+        function updateCheckboxValue(questionNumber) {
+            const checkboxes = document.querySelectorAll(`input[type="checkbox"][onchange="updateCheckboxValue(${questionNumber})"]`);
+            const checkedValues = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+            
+            document.getElementById(`pregunta_${questionNumber}_hidden`).value = checkedValues.join(', ');
+        }
+
+        // Barra de progreso
+        function updateProgress() {
+            const form = document.getElementById('encuestaForm');
+            const requiredFields = form.querySelectorAll('[required]');
+            let completedFields = 0;
+
+            requiredFields.forEach(field => {
+                if (field.type === 'radio') {
+                    const radioGroup = form.querySelectorAll(`[name="${field.name}"]`);
+                    const isChecked = Array.from(radioGroup).some(radio => radio.checked);
+                    if (isChecked) completedFields++;
+                } else if (field.type === 'checkbox') {
+                    if (field.checked) completedFields++;
+                } else if (field.value.trim() !== '') {
+                    completedFields++;
+                }
+            });
+
+            const progress = (completedFields / requiredFields.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Event listeners para actualizar progreso
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('encuestaForm');
+            
+            // Actualizar progreso en cada cambio
+            form.addEventListener('change', updateProgress);
+            form.addEventListener('input', updateProgress);
+
+            // Manejar envío del formulario
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Recopilar todos los datos del formulario
+                const formData = new FormData(form);
+                const data = {};
+                
+                // Convertir FormData a objeto simple
+                for (let [key, value] of formData.entries()) {
+                    data[key] = value;
+                }
+                
+                // Agregar timestamp
+                data.fecha_respuesta = new Date().toISOString();
+                
+                // Aquí es donde harías el INSERT a Supabase
+                console.log('Datos para Supabase:', data);
+                
+                // Ejemplo de estructura para Supabase:
+                /*
+                const { data: result, error } = await supabase
+                    .from('encuesta_influenza')
+                    .insert([data]);
+                
+                if (error) {
+                    console.error('Error:', error);
+                    alert('Error al enviar la encuesta. Por favor, intente nuevamente.');
+                } else {
+                    alert('¡Encuesta enviada exitosamente! Muchas gracias por su participación.');
+                    form.reset();
+                    updateProgress();
+                }
+                */
+                
+                // Por ahora, solo mostrar mensaje de éxito
+                alert('¡Encuesta enviada exitosamente! Muchas gracias por su participación.');
+                form.reset();
+                updateProgress();
+            });
+
+            // Inicializar progreso
+            updateProgress();
+        });
+
+        // Smooth scroll para mejor UX
+        document.addEventListener('DOMContentLoaded', function() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach((section, index) => {
+                section.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+    </script>
+</body>
+</html>
